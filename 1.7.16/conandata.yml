@@ -1,0 +1,8 @@
+sources:
+  "1.7.16":
+    url: "https://github.com/alembic/alembic/archive/1.7.16.tar.gz"
+    sha256: "2529586c89459af34d27a36ab114ad1d43dafd44061e65cfcfc73b7457379e7c"
+
+patches:
+  "1.7.16":
+    patches: "alembic-1.7.16.patch"

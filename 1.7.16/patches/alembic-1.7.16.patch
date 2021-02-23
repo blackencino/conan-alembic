@@ -1,0 +1,228 @@
+diff -Naur a/CMakeLists.txt b/CMakeLists.txt
+--- a/CMakeLists.txt	2021-02-22 12:36:48.000000000 -0800
++++ b/CMakeLists.txt	2021-02-22 12:36:54.000000000 -0800
+@@ -33,28 +33,30 @@
+ ##
+ ##-*****************************************************************************
+ 
+-PROJECT(Alembic)
+-
+-CMAKE_MINIMUM_REQUIRED(VERSION 2.8.11)
+-
+-MESSAGE(STATUS "CMAKE SYSTEM NAME: ${CMAKE_SYSTEM_NAME}")
+-
+-IF (RUN_FROM_MK)
+-    SET(CMAKE_FIRST_RUN CACHE STRING "CMake initialised from mk script")
+-    MARK_AS_ADVANCED (CMAKE_FIRST_RUN)
+-ENDIF()
+-
+-IF (NOT DEFINED QUIET)
+-    SET(CMAKE_VERBOSE_MAKEFILE TRUE)
+-ENDIF()
+-
+-# Declare the project version
+-SET(PROJECT_VERSION_MAJOR "1")
+-SET(PROJECT_VERSION_MINOR "7")
+-SET(PROJECT_VERSION_PATCH "16")
+-SET(PROJECT_VERSION
+-     ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH})
+-SET(VERSION ${PROJECT_VERSION})
++PROJECT(Alembic
++        LANGUAGES CXX
++        VERSION 1.7.16)
++
++CMAKE_MINIMUM_REQUIRED(VERSION 3.10.0)
++
++# MESSAGE(STATUS "CMAKE SYSTEM NAME: ${CMAKE_SYSTEM_NAME}")
++
++# IF (RUN_FROM_MK)
++#     SET(CMAKE_FIRST_RUN CACHE STRING "CMake initialised from mk script")
++#     MARK_AS_ADVANCED (CMAKE_FIRST_RUN)
++# ENDIF()
++
++# IF (NOT DEFINED QUIET)
++#     SET(CMAKE_VERBOSE_MAKEFILE TRUE)
++# ENDIF()
++
++# # Declare the project version
++# SET(PROJECT_VERSION_MAJOR "1")
++# SET(PROJECT_VERSION_MINOR "7")
++# SET(PROJECT_VERSION_PATCH "16")
++# SET(PROJECT_VERSION
++#      ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH})
++# SET(VERSION ${PROJECT_VERSION})
+ 
+ #-******************************************************************************
+ # OPTIONS (set with -D<option>=<value>)
+@@ -119,17 +121,18 @@
+     SET(LINUX TRUE)
+ ENDIF()
+ 
+-IF (NOT ${ALEMBIC_LIB_USES_TR1} AND NOT ${ALEMBIC_LIB_USES_BOOST})
+-    # TODO figure out how to do this for Windows
+-    INCLUDE(CheckCXXCompilerFlag)
+-    CHECK_CXX_COMPILER_FLAG("-std=c++11" COMPILER_SUPPORTS_CXX11)
+-    CHECK_CXX_COMPILER_FLAG("-std=c++0x" COMPILER_SUPPORTS_CXX0X)
+-    IF (COMPILER_SUPPORTS_CXX11)
+-        SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+-    ELSEIF (COMPILER_SUPPORTS_CXX0X)
+-        SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
+-    ENDIF()
+-ENDIF()
++# Do this on the target
++# IF (NOT ${ALEMBIC_LIB_USES_TR1} AND NOT ${ALEMBIC_LIB_USES_BOOST})
++#     # TODO figure out how to do this for Windows
++#     INCLUDE(CheckCXXCompilerFlag)
++#     CHECK_CXX_COMPILER_FLAG("-std=c++11" COMPILER_SUPPORTS_CXX11)
++#     CHECK_CXX_COMPILER_FLAG("-std=c++0x" COMPILER_SUPPORTS_CXX0X)
++#     IF (COMPILER_SUPPORTS_CXX11)
++#         SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
++#     ELSEIF (COMPILER_SUPPORTS_CXX0X)
++#         SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
++#     ENDIF()
++# ENDIF()
+ 
+ # Set visibility for GNU compilers
+ IF (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+@@ -159,9 +162,9 @@
+         SET (CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} /bigobj" )
+     ENDIF ()
+     ADD_DEFINITIONS(-DPLATFORM_WINDOWS -DPLATFORM=WINDOWS)
+-    IF (NOT ALEMBIC_ILMBASE_LINK_STATIC)
+-        ADD_DEFINITIONS(-DOPENEXR_DLL)
+-    ENDIF()
++    # IF (NOT ALEMBIC_ILMBASE_LINK_STATIC)
++    #     ADD_DEFINITIONS(-DOPENEXR_DLL)
++    # ENDIF()
+ ELSEIF (${DARWIN})
+     #ADD_DEFINITIONS(-DPLATFORM_DARWIN -DPLATFORM=DARWIN "-arch x86_64")
+     ADD_DEFINITIONS(-DPLATFORM_DARWIN -DPLATFORM=DARWIN)
+@@ -173,16 +176,16 @@
+ # INSTALLATION
+ #-******************************************************************************
+ 
+-IF (DEFINED ENV{ALEMBIC_INSTALL_PREFIX})
+-    SET( CMAKE_INSTALL_PREFIX
+-        $ENV{ALEMBIC_INSTALL_PREFIX}/alembic-${VERSION})
+-ENDIF()
++# IF (DEFINED ENV{ALEMBIC_INSTALL_PREFIX})
++#     SET( CMAKE_INSTALL_PREFIX
++#         $ENV{ALEMBIC_INSTALL_PREFIX}/alembic-${VERSION})
++# ENDIF()
+ 
+ # Tell me what my install location would be
+-MESSAGE(STATUS "The install dir is ${CMAKE_INSTALL_PREFIX}")
++#MESSAGE(STATUS "The install dir is ${CMAKE_INSTALL_PREFIX}")
+ 
+ # check in the source directory
+-SET(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR}/cmake/Modules)
++#SET(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR}/cmake/Modules)
+ 
+ #-******************************************************************************
+ # TESTS
+@@ -222,19 +225,21 @@
+ ENDIF()
+ 
+ # We only need boost if including PyAlembic, or using it in the lib
+-IF (ALEMBIC_LIB_USES_BOOST OR USE_PYALEMBIC)
+-    INCLUDE("./cmake/AlembicBoost.cmake")
+-ENDIF()
++# IF (ALEMBIC_LIB_USES_BOOST OR USE_PYALEMBIC)
++#     INCLUDE("./cmake/AlembicBoost.cmake")
++# ENDIF()
+ 
+ # IlmBase
+-INCLUDE("./cmake/AlembicIlmBase.cmake")
++find_package(OpenEXR REQUIRED)
++#INCLUDE("./cmake/AlembicIlmBase.cmake")
+ 
+ # HDF5
+ IF (USE_HDF5)
+     FIND_PACKAGE(ZLIB REQUIRED)
++    FIND_PACKAGE(HDF5 REQUIRED)
+     SET(ALEMBIC_WITH_HDF5 "1")
+     INCLUDE("./cmake/AlembicHDF5.cmake")
+-    SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DH5_USE_18_API")
++    #SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DH5_USE_18_API")
+ ENDIF()
+ 
+ #-******************************************************************************
+diff -Naur a/lib/Alembic/CMakeLists.txt b/lib/Alembic/CMakeLists.txt
+--- a/lib/Alembic/CMakeLists.txt	2021-02-22 12:36:48.000000000 -0800
++++ b/lib/Alembic/CMakeLists.txt	2021-02-22 15:34:01.000000000 -0800
+@@ -50,15 +50,22 @@
+ 
+ ADD_LIBRARY(Alembic ${LIB_TYPE} ${CXX_FILES})
+ 
++target_compile_features(Alembic PUBLIC cxx_std_11)
++
++message(STATUS "\n\nALEMBIC SOURCE DIR: ${Alembic_SOURCE_DIR}\n\n")
++
+ TARGET_INCLUDE_DIRECTORIES(Alembic
+     PUBLIC
+-    $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/lib>
+-    $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/lib>
+-    $<INSTALL_INTERFACE:$<INSTALL_PREFIX>/include>
+-    ${ALEMBIC_ILMBASE_INCLUDE_DIRECTORY}
+-    ${Boost_INCLUDE_DIRS}
+-    PRIVATE
+-    ${HDF5_INCLUDE_DIRS}
++    $<BUILD_INTERFACE:${Alembic_SOURCE_DIR}/lib>
++    $<BUILD_INTERFACE:${Alembic_BINARY_DIR}/lib>
++    #$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
++    #$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/lib>
++    #$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
++    $<INSTALL_INTERFACE:include>
++
++    #$<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/lib>
++    #$<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/lib>
++    #$<INSTALL_INTERFACE:$<INSTALL_PREFIX>/include>
+     )
+ 
+ IF (ALEMBIC_SHARED_LIBS)
+@@ -69,21 +76,22 @@
+ 
+ 
+ TARGET_LINK_LIBRARIES(Alembic
+-    LINK_PUBLIC
+-    ${ALEMBIC_ILMBASE_LIBS}
+-    ${CMAKE_THREAD_LIBS_INIT}
+-    ${EXTERNAL_MATH_LIBS}
+-    LINK_PRIVATE
+-    ${HDF5_LIBRARIES}
+-    ${ZLIB_LIBRARY}
++    PUBLIC
++    OpenEXR::OpenEXR
++    Threads::Threads
++    PRIVATE
++    HDF5::HDF5
++    ZLIB::ZLIB
+   )
+ 
++target_compile_definitions(Alembic PRIVATE "H5_USE_18_API")
++
+ # link in atomic if we are using tr1 and the compiler is new enough
+ # to want  __atomic_compare_exchange_n
+-IF ( ${ALEMBIC_LIB_USES_TR1} AND CMAKE_COMPILER_IS_GNUCXX AND
+-    CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 4.8 )
+-    TARGET_LINK_LIBRARIES( Alembic atomic )
+-ENDIF()
++# IF ( ${ALEMBIC_LIB_USES_TR1} AND CMAKE_COMPILER_IS_GNUCXX AND
++#     CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 4.8 )
++#     TARGET_LINK_LIBRARIES( Alembic atomic )
++# ENDIF()
+ 
+ SET( ALEMBIC_LIB_INSTALL_DIR lib CACHE PATH "Where to install the Alembic libs")
+ INSTALL(TARGETS Alembic
+diff -Naur a/lib/Alembic/Util/CMakeLists.txt b/lib/Alembic/Util/CMakeLists.txt
+--- a/lib/Alembic/Util/CMakeLists.txt	2021-02-22 12:36:48.000000000 -0800
++++ b/lib/Alembic/Util/CMakeLists.txt	2021-02-22 15:33:30.000000000 -0800
+@@ -43,7 +43,7 @@
+ SET(CXX_FILES "${CXX_FILES}" PARENT_SCOPE)
+ 
+ INSTALL(FILES
+-    ${PROJECT_BINARY_DIR}/lib/Alembic/Util/Config.h
++    ${Alembic_BINARY_DIR}/lib/Alembic/Util/Config.h
+     Digest.h
+     Dimensions.h
+     Exception.h
