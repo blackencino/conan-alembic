@@ -12,6 +12,4 @@ endif()
 include(conanbuildinfo.cmake)
 conan_basic_setup(${CONAN_BASIC_SETUP_ARGS})
 
-SET(CMAKE_VERBOSE_MAKEFILE TRUE)
-
 add_subdirectory(source_subfolder)

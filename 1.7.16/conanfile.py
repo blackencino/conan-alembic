@@ -35,13 +35,9 @@ class AlembicConan(ConanFile):
 
     def config_options(self):
         pass
-        #if self.settings.os == "Windows"
-        #    del self.options.fPIC
 
     def configure(self):
         pass
-        #if self.options.shared:
-        #    del self.options.fPIC
 
     def requirements(self):
         self.requires("hdf5/1.12.0")
@@ -50,19 +46,9 @@ class AlembicConan(ConanFile):
 
     def source(self):
         tools.get(**self.conan_data["sources"][self.version])
-        print("\n\nABOUT TO TRY PATCHING\n\n" + str(self.version))
-        print("here's what get patches is: " + str(self.conan_data["patches"][self.version]))
-
         tools.patch(patch_file="patches/alembic-1.7.16.patch",
                     base_path="alembic-{}".format(self.version))
         os.rename("alembic-{}".format(self.version), self._source_subfolder)
-        #print("\n\nABOUT TO TRY PATCHING\n\n" + str(self.version))
-        #print("here's what get patches is: " + str(self.conan_data["patches"][self.version]))
-        #tools.patch(patch_file="patches/alembic-1.7.16.patch", strip=1)
-        #for patch in self.conan_data["patches"][self.version]:
-            #print("\n\nAM I EVEN PATCHING? \n" + str(**patch))
-        #    print("\n\nAM I EVEN PATCHING? " + str(patch))
-        #    tools.patch(**patch)
 
     def _configure_cmake(self):
         if self._cmake:
