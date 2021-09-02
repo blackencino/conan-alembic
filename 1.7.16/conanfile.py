@@ -70,7 +70,7 @@ class AlembicConan(ConanFile):
         self._cmake.definitions["ALEMBIC_LIB_USES_BOOST"] = False
         self._cmake.definitions["ALEMBIC_LIB_USES_TR1"] = False
         self._cmake.definitions["DOCS_PATH"] = False
-
+        self._cmake.definitions["CONAN_CXX_FLAGS"] = "-Wno-deprecated-copy"
         self._cmake.configure(build_folder=self._build_subfolder)
         return self._cmake
 
