@@ -42,7 +42,7 @@ class AlembicConan(ConanFile):
     def requirements(self):
         self.requires("hdf5/1.12.0")
         self.requires("openexr/2.5.3")
-        self.requires("zlib/1.2.11")
+        self.requires("zlib/1.2.12")
 
     def source(self):
         tools.get(**self.conan_data["sources"][self.version])
@@ -90,6 +90,10 @@ class AlembicConan(ConanFile):
         self.cpp_info.names["cmake_find_package"] = "Alembic"
         self.cpp_info.names["cmake_find_package_multi"] = "Alembic"
         self.cpp_info.names["pkg_config"] = "Alembic"
+
+        compiler = self.settings.compiler
+        if str(compiler) in ("gcc", "clang", "apple-clang"):
+            self.cpp_info.cxxflags.append("-Wno-error-deprecated-copy")
 
         self.cpp_info.libs = tools.collect_libs(self)
         #self.cpp_info.includedirs = ["lib"]
