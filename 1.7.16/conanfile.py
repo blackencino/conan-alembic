@@ -40,9 +40,9 @@ class AlembicConan(ConanFile):
         pass
 
     def requirements(self):
-        self.requires("hdf5/1.12.0")
-        self.requires("openexr/2.5.3")
-        self.requires("zlib/1.2.12")
+        self.requires("hdf5/[>=1.12.0]")
+        self.requires("openexr/[>=2.5.3 <3]")
+        self.requires("zlib/[>=1.2.11]")
 
     def source(self):
         tools.get(**self.conan_data["sources"][self.version])
@@ -70,7 +70,7 @@ class AlembicConan(ConanFile):
         self._cmake.definitions["ALEMBIC_LIB_USES_BOOST"] = False
         self._cmake.definitions["ALEMBIC_LIB_USES_TR1"] = False
         self._cmake.definitions["DOCS_PATH"] = False
-        self._cmake.definitions["CONAN_CXX_FLAGS"] = "-Wno-deprecated-copy"
+        #self._cmake.definitions["CONAN_CXX_FLAGS"] = "-Wno-deprecated-copy"
         self._cmake.configure(build_folder=self._build_subfolder)
         return self._cmake
 
