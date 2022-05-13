@@ -34,3 +34,5 @@
 # Tmp directory here
 tmp/*
 
+1.7.16/test_package/build/*
+
